@@ -15,9 +15,10 @@ const gameboard = (() => {
 })();
 let currentBoard = gameboard;
 
-//View - Display Controller Module
+//View Controller Module
 const display = (function () {
-  let board = document.querySelector(".board");
+  const board = document.querySelector(".board");
+  const reset = document.querySelector(".reset");
 
   return {
     updateBoard: function (player, symbol, moveLocation) {
@@ -33,21 +34,19 @@ const display = (function () {
         board.append(cell);
       }
       display.boardListener();
+      reset.addEventListener("click", display.resetBoard);
     },
 
     boardListener: function () {
       board.addEventListener("click", (e) => {
-        let selectedCell = null;
-        if (e.target.classList.contains("cell")) {
-          selectedCell = e.target.dataset.cell;
-        } else {
-          let getClosestContainer = e.target.closest(".cell");
-          selectedCell = getClosestContainer.dataset.cell;
-        }
+        let clicked = e.target.closest(".cell");
+        let selectedCell = clicked.dataset.cell;
+
         display.updateBoard("player1", "x", selectedCell);
         display.updateBoardTest(selectedCell);
       });
     },
+
     updateBoardTest: function (selectedCell) {
       const cellNodes = document.querySelectorAll(".cell");
       const cellArray = Array.from(cellNodes);
@@ -67,10 +66,14 @@ const display = (function () {
 
 //player Factory
 const player = (name, computer, symbol) => {
-  return { name, computer, symbol };
+  let playerBoard = new Array(9);
+  return { name, computer, symbol, playerBoard };
 };
 
 const jon = player("Jon", false, "circle");
+console.log(jon);
+
+//Controller Logic
 
 function checkForWinningLine(arr, val) {
   var indexes = [];
@@ -84,6 +87,5 @@ function checkForWinningLine(arr, val) {
 }
 
 const x = checkForWinningLine(currentBoard, "x");
-const reset = document.querySelector(".reset");
-reset.addEventListener("click", display.resetBoard);
+
 display.init();
